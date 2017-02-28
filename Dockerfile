@@ -2,6 +2,9 @@ FROM node:0.10
 
 MAINTAINER Wessel Pieterse <wessel<at>ordercloud<dot>com>
 
+
+RUN apt-get install git -y
+
 RUN npm update npm &&\
     npm install http-server replace
 
