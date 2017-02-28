@@ -6,13 +6,7 @@ RUN npm update npm &&\
     npm install http-server replace
 
 
-RUN mkdir -p /tmp/swagger
-ADD https://github.com/swagger-api/swagger-ui/archive/master.tar.gz /tmp/swagger/swaggerui.tar.gz
-RUN tar --strip-components 1 -C /tmp/swagger -xzf /tmp/swagger/swaggerui.tar.gz
-
-RUN mkdir -p /swaggerui/dist/swagger-ui &&\
-    mv /tmp/swagger/dist/* /swaggerui/dist/swagger-ui &&\
-    rm -rf /tmp/swagger
+RUN mkdir -p /swaggerui/dist && git clone https://github.com/centular/swagger-ui/dist
 
 ENV API_URL http://petstore.swagger.io/v2/swagger.json
 
