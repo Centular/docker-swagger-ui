@@ -1,26 +1,16 @@
-FROM node:0.10
+FROM alpine:3.4
 
-MAINTAINER Wessel Pieterse <wessel<at>ordercloud<dot>com>
+MAINTAINER Wessel Pieterse
 
+RUN apk add --update nginx git
+RUN mkdir -p /run/nginx
 
-RUN apt-get install git -y
+COPY nginx.conf /etc/nginx/
+RUN mkdir -p /usr/share/nginx/html &&\
+    git clone https://github.com/centular/swagger-ui /tmp/swagger-ui &&\
+    mv /tmp/swagger-ui/dist/* /usr/share/nginx/html/  &&\
+    rm /tmp/swagger-ui -R
 
-RUN npm update npm &&\
-    npm install http-server replace
+EXPOSE 8080
 
-
-RUN mkdir -p /swaggerui/dist && git clone https://github.com/centular/swagger-ui/dist
-
-ENV API_URL http://petstore.swagger.io/v2/swagger.json
-
-RUN echo "'use strict';\
-var path = require('path');\
-var createServer = require('http-server').createServer;\
-var dist = path.join('swaggerui', 'dist');\
-var replace = require('replace');\
-replace({regex: 'http.*swagger.json', replacement : process.env.API_URL, paths: ['/swaggerui/dist/swagger-ui/index.html'], recursive:false, silent:true,});\
-var swaggerUI = createServer({ root: dist, cors: true });\
-swaggerUI.listen(8888);" > /swaggerui/index.js
-
-EXPOSE 8888
-CMD ["node", "/swaggerui/index.js"]
+CMD exec nginx -g 'daemon off;'
